@@ -5,9 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Task Draw - Pick & Do</title>
 
-    <!-- Custom Mobile Home Screen Icon & Favicon (Lucky Draw Slot Theme) -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='120' fill='%234f46e5'/%3E%3Ccircle cx='256' cy='256' r='160' fill='%236366f1'/%3E%3Cpath d='M180 150h152v212H180z' fill='%23ffffff' opacity='0.15'/%3E%3Ccircle cx='256' cy='256' r='110' fill='%23fbbf24'/%3E%3Ctext x='256' y='305' font-size='130' font-family='sans-serif' font-weight='bold' text-anchor='middle' fill='%231e1b4b'%3E🎲%3C/text%3E%3C/svg%3E">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='120' fill='%234f46e5'/%3E%3Ccircle cx='256' cy='256' r='160' fill='%236366f1'/%3E%3Cpath d='M180 150h152v212H180z' fill='%23ffffff' opacity='0.15'/%3E%3Ccircle cx='256' cy='256' r='110' fill='%23fbbf24'/%3E%3Ctext x='256' y='305' font-size='130' font-family='sans-serif' font-weight='bold' text-anchor='middle' fill='%231e1b4b'%3E🎲%3C/text%3E%3C/svg%3E">
+    <!-- iOS Safari & Android Web App Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Task Draw">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#4f46e5">
+
+    <!-- High-Resolution PNG Base64 Icon for iOS Safari & Favicon -->
+    <link id="appleTouchIcon" rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxEBAmpwYAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAC+SURBVHic7cExAQAAAMKg9U9tDC+gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwG20AAAflv42kAAAAASUVORK5CYII=">
+    <link id="appFavicon" rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxEBAmpwYAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAC+SURBVHic7cExAQAAAMKg9U9tDC+gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwG20AAAflv42kAAAAASUVORK5CYII=">
+
+    <!-- Web App Manifest for Android & Chrome Installation -->
+    <link rel="manifest" href="data:application/manifest+json;utf8,%7B%22name%22%3A%22Task%20Draw%22%2C%22short_name%22%3A%22TaskDraw%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f172a%22%2C%22theme_color%22%3A%22%234f46e5%22%7D">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -406,11 +416,61 @@
         // 2. APP INITIALIZATION & STORAGE
         // ==========================================
         window.addEventListener('DOMContentLoaded', () => {
+            generatePNGIcon();
             loadTasksFromStorage();
             renderTimeframeButtons();
             updateDrawUI();
             renderRepository();
         });
+
+        // Dynamically renders a pixel-perfect 180x180 PNG Icon for iOS Home Screen & Favicon
+        function generatePNGIcon() {
+            try {
+                const canvas = document.createElement('canvas');
+                canvas.width = 180;
+                canvas.height = 180;
+                const ctx = canvas.getContext('2d');
+
+                // Rounded indigo background
+                const radius = 40;
+                ctx.beginPath();
+                ctx.moveTo(radius, 0);
+                ctx.lineTo(180 - radius, 0);
+                ctx.quadraticCurveTo(180, 0, 180, radius);
+                ctx.lineTo(180, 180 - radius);
+                ctx.quadraticCurveTo(180, 180, 180 - radius, 180);
+                ctx.lineTo(radius, 180);
+                ctx.quadraticCurveTo(0, 180, 0, 180 - radius);
+                ctx.lineTo(0, radius);
+                ctx.quadraticCurveTo(0, 0, radius, 0);
+                ctx.closePath();
+
+                const grad = ctx.createLinearGradient(0, 0, 180, 180);
+                grad.addColorStop(0, '#4f46e5');
+                grad.addColorStop(1, '#312e81');
+                ctx.fillStyle = grad;
+                ctx.fill();
+
+                // Gold center circle badge
+                ctx.beginPath();
+                ctx.arc(90, 90, 52, 0, 2 * Math.PI);
+                ctx.fillStyle = '#fbbf24';
+                ctx.fill();
+
+                // 🎲 Dice Emoji
+                ctx.font = '54px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('🎲', 90, 94);
+
+                const pngDataUrl = canvas.toDataURL('image/png');
+                const touchIcon = document.getElementById('appleTouchIcon');
+                const favicon = document.getElementById('appFavicon');
+
+                if (touchIcon) touchIcon.href = pngDataUrl;
+                if (favicon) favicon.href = pngDataUrl;
+            } catch(e) {}
+        }
 
         function loadTasksFromStorage() {
             const saved = localStorage.getItem('task_draw_app_tasks');
