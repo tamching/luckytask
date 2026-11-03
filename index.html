@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Task Draw - Pick & Do</title>
+
+    <!-- Custom Mobile Home Screen Icon & Favicon (Lucky Draw Slot Theme) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='120' fill='%234f46e5'/%3E%3Ccircle cx='256' cy='256' r='160' fill='%236366f1'/%3E%3Cpath d='M180 150h152v212H180z' fill='%23ffffff' opacity='0.15'/%3E%3Ccircle cx='256' cy='256' r='110' fill='%23fbbf24'/%3E%3Ctext x='256' y='305' font-size='130' font-family='sans-serif' font-weight='bold' text-anchor='middle' fill='%231e1b4b'%3E🎲%3C/text%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='120' fill='%234f46e5'/%3E%3Ccircle cx='256' cy='256' r='160' fill='%236366f1'/%3E%3Cpath d='M180 150h152v212H180z' fill='%23ffffff' opacity='0.15'/%3E%3Ccircle cx='256' cy='256' r='110' fill='%23fbbf24'/%3E%3Ctext x='256' y='305' font-size='130' font-family='sans-serif' font-weight='bold' text-anchor='middle' fill='%231e1b4b'%3E🎲%3C/text%3E%3C/svg%3E">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -112,8 +117,8 @@
                 <i class="fa-solid fa-wand-magic-sparkles text-brand-500"></i> Lucky Draw
             </button>
             <button id="tabRepoBtn" onclick="switchTab('repo')" class="flex-1 py-2.5 text-center font-semibold text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center justify-center gap-2 transition">
-                <i class="fa-solid fa-list-check"></i> Repository
-                <span id="repoCountBadge" class="bg-slate-800 text-slate-300 text-xs px-2 py-0.5 rounded-full font-mono">0</span>
+                <i class="fa-solid fa-list-check"></i> Task List
+                <span id="repoCountBadge" class="bg-indigo-600 text-white text-xs px-2 py-0.5 rounded-full font-mono font-bold">0</span>
             </button>
         </div>
     </header>
@@ -243,14 +248,14 @@
 
         </section>
 
-        <!-- ==================== TAB 2: REPOSITORY ==================== -->
+        <!-- ==================== TAB 2: TASK LIST ==================== -->
         <section id="tabRepoView" class="hidden space-y-4">
             
-            <!-- Repository Search & Filter Bar -->
+            <!-- Task List Search & Filter Bar -->
             <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-slate-200/80 space-y-3">
                 <div class="relative">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-sm"></i>
-                    <input type="text" id="repoSearchInput" oninput="renderRepository()" placeholder="Search tasks..." 
+                    <input type="text" id="repoSearchInput" oninput="renderRepository()" placeholder="Search tasks in list..." 
                         class="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:bg-white">
                     <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-xs">
                         <i class="fa-solid fa-xmark"></i>
@@ -419,6 +424,7 @@
                 tasks = [...SAMPLE_TASKS];
                 saveTasksToStorage();
             }
+            updateCounts();
         }
 
         function saveTasksToStorage() {
@@ -427,11 +433,13 @@
         }
 
         function updateCounts() {
-            // Update Repository tab count badge
+            // Calculate active (uncompleted) pending tasks
             const pendingTotal = tasks.filter(t => !t.completed).length;
-            document.getElementById('repoCountBadge').innerText = pendingTotal;
-            
-            // Re-render timeframe buttons to reflect pending task counts
+            const badge = document.getElementById('repoCountBadge');
+            if (badge) {
+                badge.innerText = pendingTotal;
+            }
+            // Re-render timeframe preset buttons to update live category numbers
             renderTimeframeButtons();
         }
 
@@ -677,6 +685,7 @@
         }
 
         function renderRepository() {
+            updateCounts();
             const searchVal = document.getElementById('repoSearchInput').value.toLowerCase().trim();
             const clearBtn = document.getElementById('clearSearchBtn');
             
